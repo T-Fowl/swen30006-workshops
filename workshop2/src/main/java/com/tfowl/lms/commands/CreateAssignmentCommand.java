@@ -1,6 +1,5 @@
 package com.tfowl.lms.commands;
 
-import com.tfowl.lms.Command;
 import com.tfowl.lms.State;
 import com.tfowl.lms.model.HandInMethod;
 import com.tfowl.lms.requests.AssignmentCreateRequest;
@@ -8,7 +7,6 @@ import org.apache.commons.cli.*;
 
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class CreateAssignmentCommand extends Command {

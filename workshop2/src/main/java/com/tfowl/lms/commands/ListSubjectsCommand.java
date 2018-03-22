@@ -1,6 +1,5 @@
 package com.tfowl.lms.commands;
 
-import com.tfowl.lms.Command;
 import com.tfowl.lms.State;
 
 import java.util.Scanner;
