@@ -30,7 +30,15 @@ public class ImageDocument {
 	public void renderToImage(String outFile) {
 		this.outputFile = outFile;
 		try {
-			ImageIO.write(image, "JPG", new File(outFile));
+
+			for (String suffix : ImageIO.getReaderFileSuffixes()) {
+				if (outFile.endsWith("." + suffix)) {
+					ImageIO.write(image, suffix, new File(outFile));
+					return;
+				}
+			}
+
+			throw new IllegalArgumentException("Unknown file extension: " + outFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

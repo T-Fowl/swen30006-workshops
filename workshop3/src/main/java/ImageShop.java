@@ -11,7 +11,12 @@ public class ImageShop {
 	}
 
 	public static void main(String[] args) {
-		ImageLoader loader = new ImageLoader("./workshop3/input.jpg");
+		if (args.length < 2) {
+			System.out.println("Usage: ImageShop <input> <output>");
+			System.exit(0);
+		}
+
+		ImageLoader loader = new ImageLoader(args[0]);
 		ImageDocument image = loader.loadImage();
 
 		EffectLibrary library = new EffectLibrary();
@@ -20,6 +25,6 @@ public class ImageShop {
 		Effect effect = library.getEffect("grayScale");
 		image.addTransform(effect);
 
-		image.renderToImage("./workshop3/output.jpg");
+		image.renderToImage(args[1]);
 	}
 }
