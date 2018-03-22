@@ -1,4 +1,5 @@
 rootProject.name = 'workshops'
 
 include 'workshop1'
+include 'workshop2'
 
