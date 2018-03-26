@@ -2,4 +2,5 @@ dependencies {
     compile 'de.svenkubiak:jBCrypt:0.4'
 //    compile 'com.h2database:h2:1.4.197'
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
+    compile 'info.picocli:picocli:3.0.0-alpha-1'
 }
