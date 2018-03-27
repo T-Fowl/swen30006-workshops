@@ -2,6 +2,7 @@ package com.tfowl.lms;
 
 import com.tfowl.lms.commands.*;
 import com.tfowl.lms.model.User;
+import picocli.CommandLine;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,7 +57,10 @@ public class Launch {
 
 				for (Command command : registeredCommands) {
 					if (command.getName().equalsIgnoreCase(exec)) {
-						boolean result = command.exec(Utils.parseCommandArguments(line));
+
+						Boolean result = CommandLine.call(command, exec);
+
+//						boolean result = command.exec(Utils.parseCommandArguments(line));
 						if (!result)
 							System.out.println("Command failed.");
 						break;

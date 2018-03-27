@@ -2,7 +2,9 @@ package com.tfowl.lms.commands;
 
 import com.tfowl.lms.State;
 
-public abstract class Command {
+import java.util.concurrent.Callable;
+
+public abstract class Command implements Callable<Boolean> {
 
 	private String name;
 	private State state;
@@ -13,6 +15,11 @@ public abstract class Command {
 	}
 
 	public abstract boolean exec(String[] args);
+
+	@Override
+	public Boolean call() throws Exception {
+		return exec(null);
+	}
 
 	protected State getState() {
 		return state;
