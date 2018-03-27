@@ -9,7 +9,6 @@ import org.apache.commons.cli.*;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Scanner;
 
 public class SubmitToAssignmentCommand extends Command {
 
@@ -46,17 +45,17 @@ public class SubmitToAssignmentCommand extends Command {
 	private DefaultParser parser = new DefaultParser();
 
 
-	public SubmitToAssignmentCommand() {
-		super("submit");
+	public SubmitToAssignmentCommand(State state) {
+		super("submit", state);
 	}
 
 	@Override
-	public boolean exec(String[] args, State state, Scanner scanner) {
-		if (!state.getCurrentUser().isPresent()) {
+	public boolean exec(String[] args) {
+		if (!getState().getCurrentUser().isPresent()) {
 			System.out.println("Not logged in.");
 			return false;
 		}
-		if (!state.getCurrentSubject().isPresent()) {
+		if (!getState().getCurrentSubject().isPresent()) {
 			System.out.println("No subject currently selected.");
 			return false;
 		}
@@ -72,7 +71,7 @@ public class SubmitToAssignmentCommand extends Command {
 
 			String id = cmd.getOptionValue(OPT_ASSIGNMENT.getOpt());
 
-			Optional<Assignment> assignment = state.getCurrentSubject()
+			Optional<Assignment> assignment = getState().getCurrentSubject()
 													  .flatMap(subject ->
 																	   subject.getAssignments().stream()
 																			   .filter(a -> a.getId().toString().equalsIgnoreCase(id))
@@ -85,12 +84,12 @@ public class SubmitToAssignmentCommand extends Command {
 			}
 
 			SubmissionCreateRequest req = new SubmissionCreateRequest(assignment.get(),
-					state.getCurrentUser().get(),
+					getState().getCurrentUser().get(),
 					LocalDateTime.now(),
 					Paths.get(cmd.getOptionValue(OPT_FILE.getOpt())),
 					cmd.getOptionValue(OPT_NOTES.getOpt(), ""));
 
-			SubmissionReceipt receipt = state.getLms().uploadSubmission(req);
+			SubmissionReceipt receipt = getState().getLms().uploadSubmission(req);
 			System.out.println("Receipt: " + receipt.getReference().getId() + ": " + receipt.getMessage());
 		} catch (ParseException e) {
 			e.printStackTrace();

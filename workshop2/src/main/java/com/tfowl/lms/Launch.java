@@ -16,12 +16,12 @@ public class Launch {
 
 		Scanner scanner = new Scanner(System.in);
 		List<Command> registeredCommands = Arrays.asList(
-				new CreateAssignmentCommand(),
-				new ListAssignmentsCommand(),
-				new ListSubjectsCommand(),
-				new SelectSubjectCommand(),
-				new SubmitToAssignmentCommand(),
-				new ListSubmissionsCommand()
+				new CreateAssignmentCommand(state),
+				new ListAssignmentsCommand(state),
+				new ListSubjectsCommand(state),
+				new SelectSubjectCommand(state),
+				new SubmitToAssignmentCommand(state),
+				new ListSubmissionsCommand(state)
 		);
 
 		String line = null;
@@ -56,7 +56,7 @@ public class Launch {
 
 				for (Command command : registeredCommands) {
 					if (command.getName().equalsIgnoreCase(exec)) {
-						boolean result = command.exec(Utils.parseCommandArguments(line), state, scanner);
+						boolean result = command.exec(Utils.parseCommandArguments(line));
 						if (!result)
 							System.out.println("Command failed.");
 						break;

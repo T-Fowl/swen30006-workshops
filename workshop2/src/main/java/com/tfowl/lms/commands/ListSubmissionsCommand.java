@@ -8,29 +8,28 @@ import com.tfowl.lms.model.SubmissionReceipt;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class ListSubmissionsCommand extends Command {
 
-	public ListSubmissionsCommand() {
-		super("submissions");
+	public ListSubmissionsCommand(State state) {
+		super("submissions", state);
 	}
 
 	@Override
-	public boolean exec(String[] args, State state, Scanner scanner) {
-		if (!state.getCurrentUser().isPresent()) {
+	public boolean exec(String[] args) {
+		if (!getState().getCurrentUser().isPresent()) {
 			System.out.println("No logged in user.");
 			return false;
 		}
-		if (!state.getCurrentSubject().isPresent()) {
+		if (!getState().getCurrentSubject().isPresent()) {
 			System.out.println("No subject currently selected.");
 			return false;
 		}
 
-		boolean isInstructor = state.getCurrentUser().get()
+		boolean isInstructor = getState().getCurrentUser().get()
 									   .getEnrollments().stream()
-									   .filter(enrollment -> enrollment.getSubject() == state.getCurrentSubject().get())
+									   .filter(enrollment -> enrollment.getSubject() == getState().getCurrentSubject().get())
 									   .anyMatch(enrollment -> enrollment.getRoles().contains(Role.INSTRUCTOR));
 
 		if (!isInstructor) {
@@ -38,7 +37,7 @@ public class ListSubmissionsCommand extends Command {
 			return false;
 		}
 
-		state.getCurrentSubject().ifPresent(subject -> {
+		getState().getCurrentSubject().ifPresent(subject -> {
 			Map<Assignment, List<Submission>> grouped = subject.getSubmissions().stream()
 																.map(SubmissionReceipt::getReference)
 																.collect(Collectors.groupingBy(Submission::getAssignment));

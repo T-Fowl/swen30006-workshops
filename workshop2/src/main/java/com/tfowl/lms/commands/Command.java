@@ -2,19 +2,23 @@ package com.tfowl.lms.commands;
 
 import com.tfowl.lms.State;
 
-import java.util.Scanner;
-
 public abstract class Command {
 
-    private String name;
+	private String name;
+	private State state;
 
-    public Command(String name) {
-        this.name = name;
-    }
+	public Command(String name, State state) {
+		this.name = name;
+		this.state = state;
+	}
 
-    public abstract boolean exec(String[] args, State state, Scanner scanner);
+	public abstract boolean exec(String[] args);
 
-    public String getName() {
-        return name;
-    }
+	protected State getState() {
+		return state;
+	}
+
+	public String getName() {
+		return name;
+	}
 }

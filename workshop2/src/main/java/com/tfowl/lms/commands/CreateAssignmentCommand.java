@@ -7,7 +7,6 @@ import org.apache.commons.cli.*;
 
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Scanner;
 
 public class CreateAssignmentCommand extends Command {
 
@@ -66,18 +65,18 @@ public class CreateAssignmentCommand extends Command {
 
 	private DefaultParser parser;
 
-	public CreateAssignmentCommand() {
-		super("create");
+	public CreateAssignmentCommand(State state) {
+		super("create", state);
 		parser = new DefaultParser();
 	}
 
 	@Override
-	public boolean exec(String[] args, State state, Scanner scanner) {
-		if (!state.getCurrentUser().isPresent()) {
+	public boolean exec(String[] args) {
+		if (!getState().getCurrentUser().isPresent()) {
 			System.out.println("Not currently logged in.");
 			return false;
 		}
-		if (!state.getCurrentSubject().isPresent()) {
+		if (!getState().getCurrentSubject().isPresent()) {
 			System.out.println("No subject currently selected.");
 			return false;
 		}
@@ -92,7 +91,7 @@ public class CreateAssignmentCommand extends Command {
 			}
 
 
-			AssignmentCreateRequest req = new AssignmentCreateRequest(state.getCurrentUser().get(),
+			AssignmentCreateRequest req = new AssignmentCreateRequest(getState().getCurrentUser().get(),
 					cmd.getOptionValue(OPT_TITLE.getOpt()),
 					Paths.get(cmd.getOptionValue(OPT_FILE.getOpt())),
 					LocalDateTime.parse(cmd.getOptionValue(OPT_DUE.getOpt())),
@@ -100,7 +99,7 @@ public class CreateAssignmentCommand extends Command {
 					cmd.hasOption(OPT_LATE.getOpt()),
 					HandInMethod.valueOf(cmd.getOptionValue(OPT_METHOD.getOpt(), HandInMethod.FILE_UPLOAD.toString())));
 
-			state.getLms().uploadAssignment(req, state.getCurrentSubject().get());
+			getState().getLms().uploadAssignment(req, getState().getCurrentSubject().get());
 		} catch (Throwable t) {
 			t.printStackTrace();
 			return false;
