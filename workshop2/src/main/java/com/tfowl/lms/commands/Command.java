@@ -14,13 +14,6 @@ public abstract class Command implements Callable<Boolean> {
 		this.state = state;
 	}
 
-	public abstract boolean exec();
-
-	@Override
-	public Boolean call() throws Exception {
-		return exec();
-	}
-
 	protected State getState() {
 		return state;
 	}

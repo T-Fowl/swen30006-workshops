@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@picocli.CommandLine.Command(description = "List assignment submissions", name = "submissions")
 public class ListSubmissionsCommand extends Command {
 
 	public ListSubmissionsCommand(State state) {
@@ -17,7 +18,7 @@ public class ListSubmissionsCommand extends Command {
 	}
 
 	@Override
-	public boolean exec() {
+	public Boolean call() throws Exception {
 		if (!getState().getCurrentUser().isPresent()) {
 			System.out.println("No logged in user.");
 			return false;

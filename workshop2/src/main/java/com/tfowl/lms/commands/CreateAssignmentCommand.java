@@ -33,7 +33,7 @@ public class CreateAssignmentCommand extends Command {
 	}
 
 	@Override
-	public boolean exec() {
+	public Boolean call() throws Exception {
 		if (!getState().getCurrentUser().isPresent()) {
 			System.out.println("Not currently logged in.");
 			return false;

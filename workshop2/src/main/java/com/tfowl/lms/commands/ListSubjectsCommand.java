@@ -2,6 +2,7 @@ package com.tfowl.lms.commands;
 
 import com.tfowl.lms.State;
 
+@picocli.CommandLine.Command(description = "List enrolled subjects", name = "subjects")
 public class ListSubjectsCommand extends Command {
 
 	public ListSubjectsCommand(State state) {
@@ -9,7 +10,7 @@ public class ListSubjectsCommand extends Command {
 	}
 
 	@Override
-	public boolean exec() {
+	public Boolean call() throws Exception {
 		if (!getState().getCurrentUser().isPresent()) {
 			System.out.println("No user currently logged in.");
 			return false;

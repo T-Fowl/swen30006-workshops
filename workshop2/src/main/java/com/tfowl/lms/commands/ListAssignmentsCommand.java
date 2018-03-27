@@ -2,6 +2,7 @@ package com.tfowl.lms.commands;
 
 import com.tfowl.lms.State;
 
+@picocli.CommandLine.Command(description = "List Assignments", name = "assignments")
 public class ListAssignmentsCommand extends Command {
 
 	public ListAssignmentsCommand(State state) {
@@ -9,7 +10,7 @@ public class ListAssignmentsCommand extends Command {
 	}
 
 	@Override
-	public boolean exec() {
+	public Boolean call() throws Exception {
 		if (!getState().getCurrentSubject().isPresent()) {
 			System.out.println("No subject currently selected.");
 			return false;

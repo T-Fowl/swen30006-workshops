@@ -10,13 +10,15 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+@picocli.CommandLine.Command(description = "Submit to an assignment", name = "submit")
 public class SubmitToAssignmentCommand extends Command {
-
 
 	@picocli.CommandLine.Option(names = {"-a", "--assignment"}, required = true, description = "ID of the assignment")
 	private UUID assignment;
+
 	@picocli.CommandLine.Option(names = {"-f", "--file"}, required = true, description = "Submission file")
 	private File file;
+
 	@picocli.CommandLine.Option(names = {"-n", "--notes"}, required = false, description = "Optional notes for submission")
 	private String notes = "";
 
@@ -25,7 +27,7 @@ public class SubmitToAssignmentCommand extends Command {
 	}
 
 	@Override
-	public boolean exec() {
+	public Boolean call() throws Exception {
 		if (!getState().getCurrentUser().isPresent()) {
 			System.out.println("Not logged in.");
 			return false;

@@ -4,6 +4,7 @@ import com.tfowl.lms.State;
 import com.tfowl.lms.model.Enrollment;
 import picocli.CommandLine;
 
+@picocli.CommandLine.Command(description = "Select subject", name = "subject")
 public class SelectSubjectCommand extends Command {
 
 	@CommandLine.Parameters(index = "0", description = "Subject to select")
@@ -14,7 +15,7 @@ public class SelectSubjectCommand extends Command {
 	}
 
 	@Override
-	public boolean exec() {
+	public Boolean call() throws Exception {
 		if (!getState().getCurrentUser().isPresent()) {
 			System.out.println("Not logged in.");
 			return false;
