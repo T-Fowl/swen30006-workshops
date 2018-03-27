@@ -17,7 +17,7 @@ public class ListSubmissionsCommand extends Command {
 	}
 
 	@Override
-	public boolean exec(String[] args) {
+	public boolean exec() {
 		if (!getState().getCurrentUser().isPresent()) {
 			System.out.println("No logged in user.");
 			return false;

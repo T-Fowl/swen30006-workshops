@@ -4,53 +4,28 @@ import com.tfowl.lms.State;
 import com.tfowl.lms.model.Assignment;
 import com.tfowl.lms.model.SubmissionReceipt;
 import com.tfowl.lms.requests.SubmissionCreateRequest;
-import org.apache.commons.cli.*;
 
-import java.nio.file.Paths;
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 public class SubmitToAssignmentCommand extends Command {
 
 
-	private static final Option OPT_ASSIGNMENT = Option.builder("a")
-														 .longOpt("assignment")
-														 .hasArg(true)
-														 .desc("Id of the assignment")
-//														 .required(true)
-														 .build();
-
-	private static final Option OPT_FILE = Option.builder("f")
-												   .longOpt("file")
-												   .hasArg(true)
-												   .desc("File to upload / send / etc")
-//												   .required(true)
-												   .build();
-
-	private static final Option OPT_NOTES = Option.builder("n")
-													.longOpt("notes")
-													.hasArg(true)
-													.desc("Notes for submission")
-													.optionalArg(true)
-													.build();
-
-	private static final Option OPT_HELP = new Option("h", "help", false, "Print this help message.");
-
-	private static final Options OPTIONS = new Options()
-												   .addOption(OPT_HELP)
-												   .addOption(OPT_ASSIGNMENT)
-												   .addOption(OPT_FILE)
-												   .addOption(OPT_NOTES);
-
-	private DefaultParser parser = new DefaultParser();
-
+	@picocli.CommandLine.Option(names = {"-a", "--assignment"}, required = true, description = "ID of the assignment")
+	private UUID assignment;
+	@picocli.CommandLine.Option(names = {"-f", "--file"}, required = true, description = "Submission file")
+	private File file;
+	@picocli.CommandLine.Option(names = {"-n", "--notes"}, required = false, description = "Optional notes for submission")
+	private String notes = "";
 
 	public SubmitToAssignmentCommand(State state) {
 		super("submit", state);
 	}
 
 	@Override
-	public boolean exec(String[] args) {
+	public boolean exec() {
 		if (!getState().getCurrentUser().isPresent()) {
 			System.out.println("Not logged in.");
 			return false;
@@ -60,41 +35,27 @@ public class SubmitToAssignmentCommand extends Command {
 			return false;
 		}
 
-		try {
-			CommandLine cmd = parser.parse(OPTIONS, args);
 
-			if (cmd.hasOption(OPT_HELP.getOpt())) {
-				HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp(getName() + " <args>", OPTIONS);
-				return true;
-			}
+		Optional<Assignment> assignment = getState().getCurrentSubject()
+												  .flatMap(subject ->
+																   subject.getAssignments().stream()
+																		   .filter(a -> a.getId().equals(SubmitToAssignmentCommand.this.assignment))
+																		   .findFirst()
+												  );
 
-			String id = cmd.getOptionValue(OPT_ASSIGNMENT.getOpt());
-
-			Optional<Assignment> assignment = getState().getCurrentSubject()
-													  .flatMap(subject ->
-																	   subject.getAssignments().stream()
-																			   .filter(a -> a.getId().toString().equalsIgnoreCase(id))
-																			   .findFirst()
-													  );
-
-			if (!assignment.isPresent()) {
-				System.out.println("Could not find assignment with id " + id);
-				return false;
-			}
-
-			SubmissionCreateRequest req = new SubmissionCreateRequest(assignment.get(),
-					getState().getCurrentUser().get(),
-					LocalDateTime.now(),
-					Paths.get(cmd.getOptionValue(OPT_FILE.getOpt())),
-					cmd.getOptionValue(OPT_NOTES.getOpt(), ""));
-
-			SubmissionReceipt receipt = getState().getLms().uploadSubmission(req);
-			System.out.println("Receipt: " + receipt.getReference().getId() + ": " + receipt.getMessage());
-		} catch (ParseException e) {
-			e.printStackTrace();
+		if (!assignment.isPresent()) {
+			System.out.println("Could not find assignment with id " + assignment);
 			return false;
 		}
+
+		SubmissionCreateRequest req = new SubmissionCreateRequest(assignment.get(),
+				getState().getCurrentUser().get(),
+				LocalDateTime.now(),
+				file.toPath(),
+				notes);
+
+		SubmissionReceipt receipt = getState().getLms().uploadSubmission(req);
+		System.out.println("Receipt: " + receipt.getReference().getId() + ": " + receipt.getMessage());
 		return true;
 	}
 }

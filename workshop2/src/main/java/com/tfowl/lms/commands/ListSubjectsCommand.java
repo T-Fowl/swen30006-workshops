@@ -9,7 +9,7 @@ public class ListSubjectsCommand extends Command {
 	}
 
 	@Override
-	public boolean exec(String[] args) {
+	public boolean exec() {
 		if (!getState().getCurrentUser().isPresent()) {
 			System.out.println("No user currently logged in.");
 			return false;

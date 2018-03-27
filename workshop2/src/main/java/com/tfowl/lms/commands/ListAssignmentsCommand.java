@@ -9,7 +9,7 @@ public class ListAssignmentsCommand extends Command {
 	}
 
 	@Override
-	public boolean exec(String[] args) {
+	public boolean exec() {
 		if (!getState().getCurrentSubject().isPresent()) {
 			System.out.println("No subject currently selected.");
 			return false;

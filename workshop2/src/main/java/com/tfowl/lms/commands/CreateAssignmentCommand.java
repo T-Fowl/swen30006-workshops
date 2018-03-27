@@ -3,75 +3,37 @@ package com.tfowl.lms.commands;
 import com.tfowl.lms.State;
 import com.tfowl.lms.model.HandInMethod;
 import com.tfowl.lms.requests.AssignmentCreateRequest;
-import org.apache.commons.cli.*;
 
-import java.nio.file.Paths;
+import java.io.File;
 import java.time.LocalDateTime;
 
+@picocli.CommandLine.Command(description = "Create Assignment", name = "create")
 public class CreateAssignmentCommand extends Command {
 
-	private static final Option OPT_TITLE = Option.builder("t")
-													.longOpt("title")
-													.hasArg(true)
-													.desc("Assignment title")
-//													.required(true)
-													.build();
+	@picocli.CommandLine.Option(names = {"-t", "--title"}, required = true, description = "Assignment title")
+	private String title;
 
-	private static final Option OPT_FILE = Option.builder("f")
-												   .longOpt("file")
-												   .hasArg(true)
-												   .desc("Instructions file location")
-//												   .required(true)
-												   .build();
+	@picocli.CommandLine.Option(names = {"-f", "--file"}, required = true, description = "Instructions file location")
+	private File file;
 
-	private static final Option OPT_DUE = Option.builder("d")
-												  .longOpt("due")
-												  .hasArg(true)
-												  .desc("Due datetime")
-//												  .required(true)
-												  .build();
+	@picocli.CommandLine.Option(names = {"-d", "--due"}, required = true, description = "Due datetime")
+	private LocalDateTime due;
 
-	private static final Option OPT_ATTEMPTS = Option.builder("a")
-													   .longOpt("attempts")
-													   .hasArg(true)
-													   .desc("Maximum number of attempts")
-													   .optionalArg(true)
-													   .build();
+	@picocli.CommandLine.Option(names = {"-a", "--attempts"}, description = "Maximum number of attempts")
+	private int attempts = 1;
 
-	private static final Option OPT_LATE = Option.builder("l")
-												   .longOpt("late")
-												   .hasArg(false)
-												   .desc("Allow late submissions")
-												   .optionalArg(true)
-												   .build();
+	@picocli.CommandLine.Option(names = {"-l", "--late"}, description = "Allow late submissions")
+	private boolean allowLate = false;
 
-	private static final Option OPT_METHOD = Option.builder("m")
-													 .longOpt("method")
-													 .hasArg(true)
-													 .desc("Submission method")
-													 .optionalArg(true)
-													 .build();
-
-	private static final Option OPT_HELP = new Option("h", "help", false, "Print the command help message");
-
-	private static final Options OPTIONS = new Options()
-												   .addOption(OPT_HELP)
-												   .addOption(OPT_TITLE)
-												   .addOption(OPT_FILE)
-												   .addOption(OPT_DUE)
-												   .addOption(OPT_ATTEMPTS)
-												   .addOption(OPT_LATE)
-												   .addOption(OPT_METHOD);
-
-	private DefaultParser parser;
+	@picocli.CommandLine.Option(names = {"-m", "--method"}, description = "Submission method")
+	private HandInMethod method = HandInMethod.CUSTOM;
 
 	public CreateAssignmentCommand(State state) {
 		super("create", state);
-		parser = new DefaultParser();
 	}
 
 	@Override
-	public boolean exec(String[] args) {
+	public boolean exec() {
 		if (!getState().getCurrentUser().isPresent()) {
 			System.out.println("Not currently logged in.");
 			return false;
@@ -82,22 +44,14 @@ public class CreateAssignmentCommand extends Command {
 		}
 
 		try {
-			CommandLine cmd = parser.parse(OPTIONS, args);
-
-			if (cmd.hasOption(OPT_HELP.getOpt())) {
-				HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp(getName() + "<args>", OPTIONS);
-				return true;
-			}
-
 
 			AssignmentCreateRequest req = new AssignmentCreateRequest(getState().getCurrentUser().get(),
-					cmd.getOptionValue(OPT_TITLE.getOpt()),
-					Paths.get(cmd.getOptionValue(OPT_FILE.getOpt())),
-					LocalDateTime.parse(cmd.getOptionValue(OPT_DUE.getOpt())),
-					Integer.parseInt(cmd.getOptionValue(OPT_ATTEMPTS.getOpt(), "1")),
-					cmd.hasOption(OPT_LATE.getOpt()),
-					HandInMethod.valueOf(cmd.getOptionValue(OPT_METHOD.getOpt(), HandInMethod.FILE_UPLOAD.toString())));
+					title,
+					file.toPath(),
+					due,
+					attempts,
+					allowLate,
+					method);
 
 			getState().getLms().uploadAssignment(req, getState().getCurrentSubject().get());
 		} catch (Throwable t) {
