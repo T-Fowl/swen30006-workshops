@@ -3,4 +3,5 @@ rootProject.name = 'workshops'
 include 'workshop1'
 include 'workshop2'
 include 'workshop3'
+include 'workshop5'
 
